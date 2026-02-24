@@ -1,5 +1,7 @@
 package threadlol;
 
+import LeagueOfThreads.Torre;
+import LeagueOfThreads.Minion;
 import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;

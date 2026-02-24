@@ -1,5 +1,7 @@
 package threadlol;
 
+import LeagueOfThreads.Torre;
+import LeagueOfThreads.Minion;
 import java.util.ArrayList;
 import java.util.List;
 

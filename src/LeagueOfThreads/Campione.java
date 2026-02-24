@@ -1,4 +1,4 @@
-package threadlol;
+package LeagueOfThreads;
 
 /**
  * Campione: statistiche identiche per tutte e 3 le corsie.

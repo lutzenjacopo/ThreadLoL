@@ -1,4 +1,4 @@
-package threadlol;
+package LeagueOfThreads;
 
 /**
  * Torre nemica per una singola corsia.

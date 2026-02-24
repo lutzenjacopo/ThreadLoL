@@ -1,4 +1,4 @@
-package threadlol;
+package LeagueOfThreads;
 
 /**
  * Unità base. Ogni minion/campione ha posizione (0–100), vita e attacco.
@@ -11,12 +11,12 @@ public abstract class Minion {
 
     protected String           nome;
     protected int              vitaMax;
-    protected volatile int     vita;
+    protected int     vita;
     protected double           attacco;
     protected double           velocita;
-    protected volatile int     posizione;
-    protected volatile boolean inAttacco;
-    protected volatile boolean vivo;
+    protected int     posizione;
+    protected boolean inAttacco;
+    protected boolean vivo;
     protected final TipoMinion tipo;
 
     public Minion(String nome, int vita, double attacco, double velocita, TipoMinion tipo) {

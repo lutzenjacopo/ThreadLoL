@@ -1,5 +1,11 @@
 package threadlol;
 
+import LeagueOfThreads.Torre;
+import LeagueOfThreads.Campione;
+import LeagueOfThreads.Cannone;
+import LeagueOfThreads.Mago;
+import LeagueOfThreads.Minion;
+import LeagueOfThreads.Soldato;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

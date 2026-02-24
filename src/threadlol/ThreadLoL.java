@@ -1,5 +1,7 @@
 package threadlol;
 
+import LeagueOfThreads.Minion;
+
 /**
  * Thread per una singola unità in una corsia.
  *
