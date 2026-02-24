@@ -26,18 +26,12 @@ public class Frm_Gara extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jProgressBar1 = new javax.swing.JProgressBar();
-        jProgressBar2 = new javax.swing.JProgressBar();
-        jProgressBar3 = new javax.swing.JProgressBar();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        getContentPane().setLayout(null);
-        getContentPane().add(jProgressBar1);
-        jProgressBar1.setBounds(0, 540, 734, 28);
-        getContentPane().add(jProgressBar2);
-        jProgressBar2.setBounds(0, 170, 730, 30);
-        getContentPane().add(jProgressBar3);
-        jProgressBar3.setBounds(0, 350, 740, 30);
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Mappa.png"))); // NOI18N
+        getContentPane().add(jLabel1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -79,8 +73,6 @@ public class Frm_Gara extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JProgressBar jProgressBar1;
-    private javax.swing.JProgressBar jProgressBar2;
-    private javax.swing.JProgressBar jProgressBar3;
+    private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }
