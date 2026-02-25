@@ -26,12 +26,59 @@ public class Frm_Gara extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel3 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(null);
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Soldato.png"))); // NOI18N
+        getContentPane().add(jLabel3);
+        jLabel3.setBounds(130, 80, 170, 92);
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Mago.png"))); // NOI18N
+        getContentPane().add(jLabel2);
+        jLabel2.setBounds(80, 60, 150, 110);
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Cannone.png"))); // NOI18N
+        getContentPane().add(jLabel4);
+        jLabel4.setBounds(10, 70, 160, 92);
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Cannone.png"))); // NOI18N
+        getContentPane().add(jLabel5);
+        jLabel5.setBounds(0, 290, 160, 92);
+
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Mago.png"))); // NOI18N
+        getContentPane().add(jLabel6);
+        jLabel6.setBounds(70, 280, 150, 110);
+
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Soldato.png"))); // NOI18N
+        getContentPane().add(jLabel7);
+        jLabel7.setBounds(120, 300, 170, 92);
+
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Cannone.png"))); // NOI18N
+        getContentPane().add(jLabel8);
+        jLabel8.setBounds(-10, 550, 160, 92);
+
+        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Mago.png"))); // NOI18N
+        getContentPane().add(jLabel9);
+        jLabel9.setBounds(60, 540, 150, 110);
+
+        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Soldato.png"))); // NOI18N
+        getContentPane().add(jLabel10);
+        jLabel10.setBounds(110, 560, 170, 92);
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Mappa.png"))); // NOI18N
-        getContentPane().add(jLabel1, java.awt.BorderLayout.CENTER);
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(0, -10, 1266, 720);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -74,5 +121,14 @@ public class Frm_Gara extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     // End of variables declaration//GEN-END:variables
 }
