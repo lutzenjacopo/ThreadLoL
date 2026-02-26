@@ -9,7 +9,7 @@ package LeagueOfThreads;
  */
 public class Torre {
 
-    public static final int    VITA_MAX           = 12000;
+    public static final int    VITA_MAX           = 1200;
     public static final double ATTACCO            = 160.0;
     public static final int    INTERVALLO_ATTACCO = 1500;
 
