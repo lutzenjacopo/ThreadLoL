@@ -34,7 +34,13 @@ public class Frm_Gara extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        lbl_Torre1 = new javax.swing.JLabel();
+        lbl_Torre2 = new javax.swing.JLabel();
+        lbl_Torre3 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
+        pb_Torre1 = new javax.swing.JProgressBar();
+        pb_Torre2 = new javax.swing.JProgressBar();
+        pb_Torre3 = new javax.swing.JProgressBar();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -72,9 +78,27 @@ public class Frm_Gara extends javax.swing.JFrame {
         getContentPane().add(jLabel9);
         jLabel9.setBounds(60, 540, 150, 110);
 
+        lbl_Torre1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Torre.png"))); // NOI18N
+        getContentPane().add(lbl_Torre1);
+        lbl_Torre1.setBounds(1100, 40, 100, 160);
+
+        lbl_Torre2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Torre.png"))); // NOI18N
+        getContentPane().add(lbl_Torre2);
+        lbl_Torre2.setBounds(1100, 270, 100, 160);
+
+        lbl_Torre3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Torre.png"))); // NOI18N
+        getContentPane().add(lbl_Torre3);
+        lbl_Torre3.setBounds(1100, 500, 100, 160);
+
         jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Soldato.png"))); // NOI18N
         getContentPane().add(jLabel10);
         jLabel10.setBounds(110, 560, 170, 92);
+        getContentPane().add(pb_Torre1);
+        pb_Torre1.setBounds(1080, 30, 146, 10);
+        getContentPane().add(pb_Torre2);
+        pb_Torre2.setBounds(1080, 260, 146, 10);
+        getContentPane().add(pb_Torre3);
+        pb_Torre3.setBounds(1080, 490, 146, 10);
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/immagini/Mappa.png"))); // NOI18N
         getContentPane().add(jLabel1);
@@ -130,5 +154,11 @@ public class Frm_Gara extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel lbl_Torre1;
+    private javax.swing.JLabel lbl_Torre2;
+    private javax.swing.JLabel lbl_Torre3;
+    private javax.swing.JProgressBar pb_Torre1;
+    private javax.swing.JProgressBar pb_Torre2;
+    private javax.swing.JProgressBar pb_Torre3;
     // End of variables declaration//GEN-END:variables
 }

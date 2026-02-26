@@ -27,7 +27,7 @@ public class Frm_Start extends javax.swing.JFrame {
     private void initComponents() {
 
         lbl_Logo = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
+        pnl_SfondoStart = new javax.swing.JPanel();
         btn_Avvia = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -42,35 +42,44 @@ public class Frm_Start extends javax.swing.JFrame {
         getContentPane().add(lbl_Logo);
         lbl_Logo.setBounds(-90, -20, 599, 480);
 
-        jPanel1.setBackground(new java.awt.Color(0, 102, 153));
+        pnl_SfondoStart.setBackground(new java.awt.Color(0, 102, 153));
 
         btn_Avvia.setBackground(new java.awt.Color(0, 204, 204));
         btn_Avvia.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 36)); // NOI18N
         btn_Avvia.setForeground(new java.awt.Color(153, 153, 0));
         btn_Avvia.setText("Avvia");
+        btn_Avvia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_AvviaActionPerformed(evt);
+            }
+        });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnl_SfondoStartLayout = new javax.swing.GroupLayout(pnl_SfondoStart);
+        pnl_SfondoStart.setLayout(pnl_SfondoStartLayout);
+        pnl_SfondoStartLayout.setHorizontalGroup(
+            pnl_SfondoStartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnl_SfondoStartLayout.createSequentialGroup()
                 .addGap(40, 40, 40)
                 .addComponent(btn_Avvia, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(70, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+        pnl_SfondoStartLayout.setVerticalGroup(
+            pnl_SfondoStartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_SfondoStartLayout.createSequentialGroup()
                 .addContainerGap(482, Short.MAX_VALUE)
                 .addComponent(btn_Avvia, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(22, 22, 22))
         );
 
-        getContentPane().add(jPanel1);
-        jPanel1.setBounds(0, 0, 450, 590);
+        getContentPane().add(pnl_SfondoStart);
+        pnl_SfondoStart.setBounds(0, 0, 450, 590);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btn_AvviaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AvviaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_AvviaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -110,7 +119,7 @@ public class Frm_Start extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_Avvia;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lbl_Logo;
+    private javax.swing.JPanel pnl_SfondoStart;
     // End of variables declaration//GEN-END:variables
 }
