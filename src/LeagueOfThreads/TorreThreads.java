@@ -3,9 +3,8 @@ package LeagueOfThreads;
 import java.util.List;
 
 /**
- * Thread della Torre nemica.
- * Attacca solo minion con posizione >= 85 (entro il 15% dalla torre).
- * Priorità: SOLDATO → MAGO → CANNONE → CAMPIONE.
+ * Thread della Torre nemica. Attacca solo minion con posizione >= 85 (entro il
+ * 15% dalla torre). Priorità: SOLDATO → MAGO → CANNONE → CAMPIONE.
  */
 public class TorreThreads implements Runnable {
 
@@ -18,16 +17,18 @@ public class TorreThreads implements Runnable {
         Minion.TipoMinion.CAMPIONE
     };
 
-    private final Torre        torre;
+    private final Torre torre;
     private final List<Minion> minion;
-    private volatile boolean   attivo = true;
+    private volatile boolean attivo = true;
 
     public TorreThreads(Torre torre, List<Minion> minion) {
-        this.torre  = torre;
+        this.torre = torre;
         this.minion = minion;
     }
 
-    public void ferma() { attivo = false; }
+    public void ferma() {
+        attivo = false;
+    }
 
     @Override
     public void run() {
@@ -36,8 +37,9 @@ public class TorreThreads implements Runnable {
             if (bersaglio != null) {
                 bersaglio.subisciDanno(torre.getAttacco());
             }
-            try { Thread.sleep(torre.getIntervalloAttacco()); }
-            catch (InterruptedException e) {
+            try {
+                Thread.sleep(torre.getIntervalloAttacco());
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return;
             }
@@ -47,8 +49,9 @@ public class TorreThreads implements Runnable {
     private Minion trovaBersaglio() {
         for (Minion.TipoMinion tipo : PRIORITA) {
             for (Minion m : minion) {
-                if (m.isVivo() && m.getTipo() == tipo && m.getPosizione() >= SOGLIA_ATTACCO)
+                if (m.isVivo() && m.getTipo() == tipo && m.getPosizione() >= SOGLIA_ATTACCO) {
                     return m;
+                }
             }
         }
         return null;

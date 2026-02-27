@@ -2,7 +2,9 @@ package LeagueOfThreads;
 
 public class Frm_Start extends javax.swing.JFrame {
 
-    public Frm_Start() { initComponents(); }
+    public Frm_Start() {
+        initComponents();
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
