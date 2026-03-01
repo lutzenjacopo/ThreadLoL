@@ -7,7 +7,7 @@ package LeagueOfThreads;
  * indipendente dalle altre. La torre rimane in vita finché i minion non la
  * portano a 0 punti vita.
  *
- * ITA_MAX = 4800 – punti vita totali ATTACCO = 160 – danno inflitto ad ogni
+ * VITA_MAX = 4800 – punti vita totali ATTACCO = 160 – danno inflitto ad ogni
  * tiro su un minion INTERVALLO_ATTACCO = 1500 ms – cadenza di fuoco
  *
  * Il metodo {@link #subisciDanno(double)} è {@code synchronized} per evitare
