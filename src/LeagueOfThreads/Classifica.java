@@ -3,16 +3,22 @@ package LeagueOfThreads;
 import java.util.List;
 
 /**
- * Finestra classifica finale.
- * Il form grafico è già stato configurato nel designer.
- * Il metodo {@link #mostraClassifica(GestioneClassifica)} popola
- * le tre textbox con i dati di chi ha vinto per primo, secondo e terzo.
+ * Finestra della classifica finale.
  *
- * Factory method: {@link #apri(GestioneClassifica)} crea, popola
- * e mostra la finestra sull'EDT.
+ * Flusso di utilizzo tipico:
+ * 
+ *      {@link Frm_Gara} rileva che tutte e 3 le torri sono cadute.
+ *      Chiama il factory method statico {@link #apri(GestioneClassifica)}.
+ *      {@code apri} crea la finestra sull'EDT, chiama {@link #mostraClassifica}
+ *       e la rende visibile.
+ *
+ * Ogni textbox mostra: {@code NomeCampione  –  Corsia N  –  m:ss.d}
  */
 public class Classifica extends javax.swing.JFrame {
 
+    /**
+     * Costruisce la finestra e centra la schermata.
+     */
     public Classifica() {
         initComponents();
         setLocationRelativeTo(null);
@@ -23,10 +29,16 @@ public class Classifica extends javax.swing.JFrame {
     // ════════════════════════════════════════════════════════════════════
 
     /**
-     * Popola le textbox con i dati della classifica.
-     * Deve essere chiamato sull'EDT.
+     * Popola le 3 textbox con i dati della classifica.
      *
-     * Formato cella: "NomeCampione  –  Corsia N  –  m:ss.d"
+     * Per ogni posizione scrive nel campo corrispondente:
+     * {@code NomeCampione  –  Corsia N  –  m:ss.d}.
+     * Se per qualsiasi motivo ci sono meno di 3 voci registrate,
+     * le textbox rimanenti mostrano "—".
+     *
+     * Deve essere chiamato sull'EDT (garantito da {@link #apri}).
+     *
+     * @param gc gestore classifica da cui leggere i dati
      */
     public void mostraClassifica(GestioneClassifica gc) {
         List<GestioneClassifica.Voce> voci = gc.getClassifica();
@@ -47,8 +59,13 @@ public class Classifica extends javax.swing.JFrame {
     }
 
     /**
-     * Crea, popola e mostra la classifica sull'EDT.
-     * Da chiamare dal thread della corsia quando tutte le torri sono cadute.
+     * Factory method: crea, popola e mostra la classifica sull'EDT.
+     *
+     * Questo metodo può essere chiamato da qualsiasi thread (inclusi i
+     * thread corsia di {@link Frm_Gara}): l'operazione viene delegata
+     * sull'EDT tramite {@link javax.swing.SwingUtilities#invokeLater}.
+     *
+     * @param gc gestore classifica con i dati della gara appena conclusa
      */
     public static void apri(GestioneClassifica gc) {
         javax.swing.SwingUtilities.invokeLater(() -> {

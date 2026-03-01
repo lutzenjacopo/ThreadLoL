@@ -1,7 +1,19 @@
 package LeagueOfThreads;
 
+/**
+ * Schermata di avvio dell'applicazione.
+ *
+ * Mostra il logo del gioco ({@code Icona.png}) e un unico pulsante
+ * Avvia. Al click, apre la finestra delle regole {@link Frm_Regole}
+ * e chiude se stessa.
+ *
+ * Questa è la prima finestra creata da {@link Avvia#main}.
+ */
 public class Frm_Start extends javax.swing.JFrame {
 
+    /**
+     * Costruisce la schermata di avvio e inizializza i componenti del form.
+     */
     public Frm_Start() {
         initComponents();
     }
@@ -61,6 +73,10 @@ public class Frm_Start extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Gestisce il click sul pulsante Avvia.
+     * Apre la finestra delle regole ({@link Frm_Regole}) e chiude questa schermata.
+     */
     private void btn_AvviaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AvviaActionPerformed
         new Frm_Regole().setVisible(true);
         this.dispose();

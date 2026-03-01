@@ -1,7 +1,24 @@
 package LeagueOfThreads;
 
+/**
+ * Schermata delle regole del gioco.
+ *
+ * Mostra il logo ({@code Logo.png}), un'area di testo con la spiegazione
+ * delle meccaniche di gioco e un'immagine animata {@code Gioca.gif} che
+ * funge da pulsante di avvio.
+ *
+ * Al click su {@code lbl_Gioca}:
+ * 
+ *   Crea e rende visibile la finestra di gioco {@link Frm_Gara}.
+ *   Chiama {@link Frm_Gara#startGara()} per inizializzare e avviare la gara.
+ *   Chiude questa finestra.
+ * 
+ */
 public class Frm_Regole extends javax.swing.JFrame {
 
+    /**
+     * Costruisce la schermata delle regole e inizializza i componenti del form.
+     */
     public Frm_Regole() {
         initComponents();
     }
@@ -116,6 +133,10 @@ public class Frm_Regole extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Gestisce il click sull'immagine animata {@code lbl_Gioca}.
+     * Crea e avvia la finestra di gioco {@link Frm_Gara}, poi chiude questa schermata.
+     */
     private void lbl_GiocaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_GiocaMouseClicked
         Frm_Gara frmGara = new Frm_Gara();
         frmGara.setVisible(true);

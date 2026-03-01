@@ -1,45 +1,85 @@
 package LeagueOfThreads;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Finestra principale della gara.
+ * Finestra principale della gara: ospita le 3 corsie animate e coordina
+ * tutti i thread di gioco.
  *
- * Quando una torre cade, il suo campione viene registrato in
- * {@link GestioneClassifica}. Quando tutte e 3 le torri sono cadute
- * viene aperta la finestra {@link Classifica} con il podio finale.
+ * Logica di avvio
+ * Dopo {@code setVisible(true)}, chiamare {@link #startGara()} che:
+ * 
+ *   Inizializza le 3 torri e il gestore classifica (avvia il cronometro).
+ *   Configura le progress-bar con la vita massima.
+ *   Nasconde tutti i label minion e campione presenti nel form.
+ *   Avvia i 3 thread corsia in parallelo.
  *
- * Mapping label → corsia:
- *   Corsia 1: lbl_MinionCorsia1_1/2/3  ·  lbl_CampioneGaren     →  Garen
- *   Corsia 2: lbl_MinionCorsia2_1/2/3  ·  lbl_CampioneJinx      →  Jinx
- *   Corsia 3: lbl_MinionCorsia3_1/2/3  ·  lbl_CampioneMalphite  →  Malphite
+ * Ciclo di un'ondata
+ * Per ogni ondata, ciascuna corsia:
+ * 
+ *   Genera 3 minion con tipo indipendentemente casuale
+ *       (ogni slot chiama {@link #minionCasuale()}: possono ripetersi tipi uguali).
+ *   Aggiunge il campione fisso della corsia come 4° slot.
+ *   Lancia {@link TorreThreads} e 4× {@link MinionThreads} con
+ *       stagger di {@value #STAGGER_MS} ms tra un minion e il successivo.
+ *   Monitora la vita della torre tramite la progress-bar ogni 100 ms.
+ *   Alla morte del campione ferma tutti i thread e attende 3 s
+ *       prima della prossima ondata.
+ *
+ * Fine gara
+ * Quando una torre cade, la vittoria viene registrata in {@link GestioneClassifica}.
+ * Quando tutte e 3 le torri sono cadute si apre {@link Classifica} e questa
+ * finestra viene chiusa.
+ *
+ * Mapping label → corsia
+ * 
+ *   Corsia 1 (Top): lbl_MinionTop1/2/3  ·  lbl_CampioneGaren    →  Garen
+ *   Corsia 2 (Mid): lbl_MinionMid1/2/3  ·  lbl_CampioneJinx     →  Jinx
+ *   Corsia 3 (Bot): lbl_MinionBot1/2/3  ·  lbl_CampioneMalphite →  Malphite
+ * 
  */
 public class Frm_Gara extends javax.swing.JFrame {
 
     // ── Torri ────────────────────────────────────────────────────────────
-    private Torre torre1, torre2, torre3;
+
+    /** Torre nemica della corsia Top (corsia 1). */
+    private Torre torre1;
+    /** Torre nemica della corsia Mid (corsia 2). */
+    private Torre torre2;
+    /** Torre nemica della corsia Bot (corsia 3). */
+    private Torre torre3;
 
     // ── Classifica ───────────────────────────────────────────────────────
+
+    /** Gestisce l'ordine di caduta delle torri e i relativi tempi. */
     private GestioneClassifica classifica;
 
-    // ── Icone minion pre-caricate ─────────────────────────────────────────
+    // ── Icone minion (pre-caricate per swap ad ogni ondata) ───────────────
+
+    /** Icona del Soldato, usata per aggiornare il label al tipo estratto. */
     private javax.swing.ImageIcon iconSoldato;
+    /** Icona del Mago, usata per aggiornare il label al tipo estratto. */
     private javax.swing.ImageIcon iconMago;
+    /** Icona del Cannone, usata per aggiornare il label al tipo estratto. */
     private javax.swing.ImageIcon iconCannone;
 
-    /** Stagger tra un minion e il successivo nella stessa ondata (ms). */
+    /** Millisecondi di stagger tra un minion e il successivo della stessa ondata. */
     private static final long STAGGER_MS = 1500;
 
     // ════════════════════════════════════════════════════════════════════
     //  COSTRUTTORE
     // ════════════════════════════════════════════════════════════════════
 
+    /**
+     * Costruisce la finestra: inizializza i componenti del form, forza
+     * il contentPane alle dimensioni esatte della mappa (eliminando spazi
+     * bianchi) e centra la finestra sullo schermo.
+     */
     public Frm_Gara() {
         initComponents();
+        // Forza il contentPane alla dimensione esatta della mappa (1266×710)
         getContentPane().setPreferredSize(new java.awt.Dimension(1266, 710));
         pack();
         setLocationRelativeTo(null);
@@ -50,6 +90,12 @@ public class Frm_Gara extends javax.swing.JFrame {
     //  LOGICA DI GIOCO
     // ════════════════════════════════════════════════════════════════════
 
+    /**
+     * Carica un'icona dalla cartella risorse del progetto.
+     *
+     * @param path percorso relativo, es. "/immagini/Soldato.png"
+     * @return {@link javax.swing.ImageIcon} oppure {@code null} se non trovata
+     */
     private javax.swing.ImageIcon caricaIcona(String path) {
         try {
             java.net.URL url = getClass().getResource(path);
@@ -60,18 +106,27 @@ public class Frm_Gara extends javax.swing.JFrame {
     }
 
     /**
-     * Inizializza torri, classifica, progress-bar, icone.
-     * Nasconde tutti i label minion/campione, porta tutto sopra la mappa,
-     * avvia le 3 corsie in parallelo.
-     * Da chiamare DOPO setVisible(true).
+     * Inizializza e avvia la gara.
+     *
+     * Operazioni eseguite nell'ordine:
+     * 
+     *   Crea le 3 torri e il gestore classifica (il cronometro parte qui).
+     *   Configura le 3 progress-bar con valore = {@link Torre#VITA_MAX}.
+     *   Carica le icone dei 3 tipi di minion normali per lo swap a runtime.
+     *   Nasconde tutti i label minion e campione del form.
+     *   Imposta lo z-order affinché minion e torri siano sopra la mappa.
+     *   Avvia le 3 corsie in thread separati.
+     * 
+     *
+     * Deve essere chiamato dopo {@code setVisible(true)}.
      */
     public void startGara() {
         torre1     = new Torre();
         torre2     = new Torre();
         torre3     = new Torre();
-        classifica = new GestioneClassifica();   // ← cronometro parte qui
+        classifica = new GestioneClassifica(); // cronometro parte qui
 
-        // Progress-bar
+        // ── Configura le progress-bar ─────────────────────────────────────
         for (javax.swing.JProgressBar pb :
                 new javax.swing.JProgressBar[]{pb_Torre1, pb_Torre2, pb_Torre3}) {
             pb.setMinimum(0);
@@ -80,12 +135,12 @@ public class Frm_Gara extends javax.swing.JFrame {
             pb.setStringPainted(true);
         }
 
-        // Icone minion
+        // ── Carica icone minion (servono per lo swap a ogni ondata) ───────
         iconSoldato = caricaIcona("/immagini/Soldato.png");
         iconMago    = caricaIcona("/immagini/Mago.png");
         iconCannone = caricaIcona("/immagini/Cannone.png");
 
-        // Nasconde tutti i label minion e campione
+        // ── Nasconde tutti i label minion e campione del form ─────────────
         for (javax.swing.JLabel lbl : new javax.swing.JLabel[]{
                 lbl_MinionTop1, lbl_MinionTop2, lbl_MinionTop3,
                 lbl_MinionMid1, lbl_MinionMid2, lbl_MinionMid3,
@@ -94,7 +149,7 @@ public class Frm_Gara extends javax.swing.JFrame {
             lbl.setVisible(false);
         }
 
-        // Porta i label sopra la mappa di sfondo
+        // ── ZOrder: porta minion e torri sopra il label mappa di sfondo ───
         for (javax.swing.JLabel lbl : new javax.swing.JLabel[]{
                 lbl_MinionTop1, lbl_MinionTop2, lbl_MinionTop3,
                 lbl_MinionMid1, lbl_MinionMid2, lbl_MinionMid3,
@@ -104,22 +159,29 @@ public class Frm_Gara extends javax.swing.JFrame {
             getContentPane().setComponentZOrder(lbl, 0);
         }
 
-        // Avvia le corsie con campione FISSO
+        // ── Avvia le 3 corsie con campione FISSO ──────────────────────────
         avviaCorsia(1, torre1, pb_Torre1, lbl_Torre1,
-                new javax.swing.JLabel[]{lbl_MinionTop1, lbl_MinionTop2, lbl_MinionTop3,},
-                lbl_CampioneGaren,   "Garen",    Campione::creaGaren);
+                new javax.swing.JLabel[]{lbl_MinionTop1, lbl_MinionTop2, lbl_MinionTop3},
+                lbl_CampioneGaren,    "Garen",    Campione::creaGaren);
 
         avviaCorsia(2, torre2, pb_Torre2, lbl_Torre2,
-                new javax.swing.JLabel[]{lbl_MinionMid1, lbl_MinionMid2, lbl_MinionMid3,},
-                lbl_CampioneJinx,    "Jinx",     Campione::creaJinx);
+                new javax.swing.JLabel[]{lbl_MinionMid1, lbl_MinionMid2, lbl_MinionMid3},
+                lbl_CampioneJinx,     "Jinx",     Campione::creaJinx);
 
         avviaCorsia(3, torre3, pb_Torre3, lbl_Torre3,
-                new javax.swing.JLabel[]{lbl_MinionBot1, lbl_MinionBot2, lbl_MinionBot3,},
+                new javax.swing.JLabel[]{lbl_MinionBot1, lbl_MinionBot2, lbl_MinionBot3},
                 lbl_CampioneMalphite, "Malphite", Campione::creaMalphite);
     }
 
     // ── Utilità ──────────────────────────────────────────────────────────
 
+    /**
+     * Restituisce l'icona pre-caricata corrispondente al tipo del minion.
+     * Usata per aggiornare il label visivo ad ogni ondata.
+     *
+     * @param m minion di cui si vuole l'icona
+     * @return icona del tipo del minion
+     */
     private javax.swing.ImageIcon iconaPer(Minion m) {
         switch (m.getTipo()) {
             case SOLDATO:  return iconSoldato;
@@ -129,18 +191,55 @@ public class Frm_Gara extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Genera un minion di tipo casuale indipendente tra
+     * {@link Soldato}, {@link Mago} e {@link Cannone}.
+     *
+     * Ogni chiamata è indipendente dalle altre: lo stesso tipo può
+     * comparire in più slot della stessa ondata (es. 3 Magi di fila).
+     *
+     * @return nuova istanza di Soldato, Mago o Cannone scelta casualmente
+     */
+    private Minion minionCasuale() {
+        switch ((int)(Math.random() * 3)) {
+            case 0:  return new Soldato();
+            case 1:  return new Mago();
+            default: return new Cannone();
+        }
+    }
+
     // ── Gestione corsia ──────────────────────────────────────────────────
 
     /**
-     * Ciclo di vita di una corsia.
+     * Avvia il ciclo di vita di una corsia in un thread dedicato.
+     *
+     * Ad ogni ondata:
+     * 
+     *   Genera 3 minion con tipo indipendentemente casuale
+     *       (tramite {@link #minionCasuale()}) e aggiorna le icone dei label.
+     *   Crea il campione fisso tramite {@code campioneFabbrica}.
+     *   Lancia {@link TorreThreads} e 4× {@link MinionThreads}
+     *       con stagger di {@value #STAGGER_MS} ms tra uno e il successivo.
+     *   Aggiorna la progress-bar della torre ogni 100 ms.
+     *   Alla morte del campione ferma tutti i thread e attende 3 s.
+     * 
      *
      * Quando la torre cade:
-     *  1. Registra la vittoria in {@link GestioneClassifica}.
-     *  2. Aggiorna grafica torre (💥).
-     *  3. Se è l'ultima torre caduta → apre {@link Classifica} e chiude Frm_Gara.
+     * 
+     *   Registra la vittoria in {@link #classifica} (thread-safe).
+     *   Sostituisce l'icona della torre con l'emoji "💥".
+     *   Se è l'ultima torre → pausa 800 ms → apre {@link Classifica}
+     *       → chiude questa finestra.
+     * 
      *
-     * @param nomeCampione  nome del campione fisso della corsia (es. "Garen")
-     * @param fabbrica      supplier del campione fisso
+     * @param numero           numero della corsia (1–3)
+     * @param torre            istanza della torre di questa corsia
+     * @param pb               progress-bar vita torre
+     * @param lblTorre         label grafico della torre
+     * @param slotLabels       3 label JLabel per i minion normali (slot 1/2/3)
+     * @param lblCampione      label del campione fisso della corsia
+     * @param nomeCampione     nome stringa del campione (es. "Garen")
+     * @param campioneFabbrica supplier che istanzia il campione ad ogni ondata
      */
     private void avviaCorsia(int numero, Torre torre,
                              javax.swing.JProgressBar pb,
@@ -148,23 +247,27 @@ public class Frm_Gara extends javax.swing.JFrame {
                              javax.swing.JLabel[] slotLabels,
                              javax.swing.JLabel lblCampione,
                              String nomeCampione,
-                             Supplier<Campione> fabbrica) {
+                             Supplier<Campione> campioneFabbrica) {
 
         Thread corsiaThread = new Thread(() -> {
 
             while (torre.isViva()) {
-                  
-                // ── Shuffle dei 3 tipi ─────────────────────────────────
-                List<Minion> terzetto = new ArrayList<>(Arrays.asList(
-                        new Soldato(), new Mago(), new Cannone()));
-                Collections.shuffle(terzetto);
 
-                Campione campione = fabbrica.get();
+                // ── Genera 3 minion con tipo casuale indipendente ──────
+                // Ogni slot chiama minionCasuale() separatamente:
+                // i tipi possono ripetersi (es. Mago/Mago/Soldato).
+                List<Minion> terzetto = new ArrayList<>();
+                for (int i = 0; i < 3; i++) {
+                    terzetto.add(minionCasuale());
+                }
+
+                // Il 4° slot è sempre il campione fisso della corsia
+                Campione campione = campioneFabbrica.get();
 
                 List<Minion> ondata = new ArrayList<>(terzetto);
                 ondata.add(campione);
 
-                // ── Aggiorna icone e nascondi sul EDT ──────────────────
+                // ── Aggiorna icone slot e nascondi label sul EDT ───────
                 java.util.concurrent.CountDownLatch latch =
                         new java.util.concurrent.CountDownLatch(1);
 
@@ -180,13 +283,13 @@ public class Frm_Gara extends javax.swing.JFrame {
                 try { latch.await(); }
                 catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }
 
-                // ── TorreThreads ──────────────────────────────────────
+                // ── TorreThreads: attacca i minion entro soglia ────────
                 TorreThreads torreLogic = new TorreThreads(torre, ondata);
                 Thread tThread = new Thread(torreLogic, "Torre-" + numero);
                 tThread.setDaemon(true);
                 tThread.start();
 
-                // ── MinionThreads con stagger ─────────────────────────
+                // ── MinionThreads: un thread per minion, stagger 1500 ms
                 MinionThreads[] mLogic   = new MinionThreads[4];
                 Thread[]        mThreads = new Thread[4];
 
@@ -194,16 +297,17 @@ public class Frm_Gara extends javax.swing.JFrame {
                     mLogic[i] = new MinionThreads(
                             terzetto.get(i), torre, slotLabels[i], i * STAGGER_MS);
                     mThreads[i] = new Thread(mLogic[i],
-                            "M-C" + numero + "-" + terzetto.get(i).getNome());
+                            "M-C" + numero + "-" + terzetto.get(i).getNome() + "-" + i);
                     mThreads[i].setDaemon(true);
                     mThreads[i].start();
                 }
+                // Campione: 4° slot, parte per ultimo (stagger massimo)
                 mLogic[3]   = new MinionThreads(campione, torre, lblCampione, 3 * STAGGER_MS);
                 mThreads[3] = new Thread(mLogic[3], "M-C" + numero + "-" + campione.getNome());
                 mThreads[3].setDaemon(true);
                 mThreads[3].start();
 
-                // ── Aggiorna health-bar finché il campione è vivo ─────
+                // ── Aggiorna health-bar ogni 100 ms ───────────────────
                 while (campione.isVivo() && torre.isViva()) {
                     final int vita = torre.getVita();
                     javax.swing.SwingUtilities.invokeLater(() -> {
@@ -214,23 +318,25 @@ public class Frm_Gara extends javax.swing.JFrame {
                     catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }
                 }
 
-                // ── Ferma tutti ───────────────────────────────────────
+                // ── Fine ondata: ferma tutti i thread ─────────────────
                 torreLogic.ferma();
                 for (MinionThreads ml : mLogic)  ml.ferma();
                 for (Thread mt       : mThreads) mt.interrupt();
 
+                // Nasconde i label dell'ondata conclusa
                 javax.swing.SwingUtilities.invokeLater(() -> {
                     for (javax.swing.JLabel lbl : slotLabels) lbl.setVisible(false);
                     lblCampione.setVisible(false);
                 });
 
+                // Aggiorna la progress-bar con la vita residua della torre
                 final int vitaFinale = torre.getVita();
                 javax.swing.SwingUtilities.invokeLater(() -> {
                     pb.setValue(vitaFinale);
                     pb.setString(vitaFinale + " / " + Torre.VITA_MAX);
                 });
 
-                // ── Pausa 3 s tra le ondate ───────────────────────────
+                // ── Pausa 3 s prima della prossima ondata ─────────────
                 if (torre.isViva()) {
                     try { Thread.sleep(3000); }
                     catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }
@@ -238,10 +344,11 @@ public class Frm_Gara extends javax.swing.JFrame {
             }
 
             // ── Torre distrutta ────────────────────────────────────────
-            // 1. Registra nella classifica (thread-safe)
-            int posizione = classifica.registraVittoria(numero, nomeCampione);
 
-            // 2. Aggiorna grafica torre
+            // 1. Registra la vittoria (thread-safe: synchronized in GestioneClassifica)
+            classifica.registraVittoria(numero, nomeCampione);
+
+            // 2. Aggiorna grafica: progress-bar a 0, icona torre → 💥
             javax.swing.SwingUtilities.invokeLater(() -> {
                 pb.setValue(0);
                 pb.setString("DISTRUTTA");
@@ -251,14 +358,12 @@ public class Frm_Gara extends javax.swing.JFrame {
                 lblTorre.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 40));
             });
 
-            // 3. Se è l'ultima torre → apri classifica e chiudi gara
+            // 3. Ultima torre caduta → pausa breve, poi apri classifica e chiudi
             if (classifica.getTorreCadute() == 3) {
-                // Piccola pausa affinché l'ultima esplosione sia visibile
-                try { Thread.sleep(800); }
+                try { Thread.sleep(800); } // lascia vedere l'ultima esplosione
                 catch (InterruptedException ignored) { }
 
                 Classifica.apri(classifica);
-
                 javax.swing.SwingUtilities.invokeLater(() -> Frm_Gara.this.dispose());
             }
 

@@ -5,21 +5,42 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Gestisce la classifica della gara registrando l'ordine in cui
- * le torri vengono abbattute.
+ * Gestisce la classifica della gara registrando, in ordine cronologico,
+ * quale campione (e quindi quale corsia) ha abbattuto la torre nemica.
  *
- * È thread-safe: più corsie possono chiamare {@link #registraVittoria}
- * contemporaneamente senza problemi di concorrenza.
+ * La classe è thread-safe: i metodi pubblici sono {@code synchronized},
+ * quindi più corsie possono chiamarli contemporaneamente senza race condition
+ *
+ * Il cronometro parte all'istanziazione (chiamata in {@link Frm_Gara#startGara()})
+ * e il tempo di ogni vittoria viene calcolato come differenza rispetto a quel momento
  */
 public class GestioneClassifica {
 
-    // ── Dati di un singolo piazzamento ────────────────────────────────────
-    public static class Voce {
-        public final int    posizione;      // 1 = primo, 2 = secondo, 3 = terzo
-        public final int    corsia;         // 1, 2 o 3
-        public final String nomeCampione;   // es. "Garen"
-        public final long   tempoMs;        // ms dall'inizio della gara
+    // ── Classe interna Voce ───────────────────────────────────────────────
 
+    /**
+     * Record immutabile che rappresenta un singolo piazzamento nella classifica.
+     */
+    public static class Voce {
+
+        /** Posizione finale: 1 = prima torre caduta, 2 = seconda, 3 = terza. */
+        public final int posizione;
+
+        /** Numero della corsia (1 = Top, 2 = Mid, 3 = Bot). */
+        public final int corsia;
+
+        /** Nome del campione che ha guidato l'attacco (es. "Garen"). */
+        public final String nomeCampione;
+
+        /** Tempo in ms dall'inizio della gara al momento della vittoria. */
+        public final long tempoMs;
+
+        /**
+         * @param posizione    piazzamento (1–3)
+         * @param corsia       numero della corsia (1–3)
+         * @param nomeCampione nome del campione
+         * @param tempoMs      tempo dall'inizio gara in millisecondi
+         */
         Voce(int posizione, int corsia, String nomeCampione, long tempoMs) {
             this.posizione    = posizione;
             this.corsia       = corsia;
@@ -27,29 +48,51 @@ public class GestioneClassifica {
             this.tempoMs      = tempoMs;
         }
 
-        /** Tempo formattato come "m:ss.d" */
+        /**
+         * Restituisce il tempo formattato come {@code m:ss.d}
+         * (minuti : secondi . decimi di secondo).
+         * Esempio: 93450 ms → {@code "1:33.4"}
+         *
+         * @return stringa formattata del tempo di vittoria
+         */
         public String tempoFormattato() {
-            long min  = tempoMs / 60_000;
-            long sec  = (tempoMs % 60_000) / 1000;
-            long dec  = (tempoMs % 1000)   / 100;
+            long min = tempoMs / 60_000;
+            long sec = (tempoMs % 60_000) / 1000;
+            long dec = (tempoMs % 1000)   / 100;
             return String.format("%d:%02d.%d", min, sec, dec);
         }
     }
 
-    private final long          inizioMs;
-    private final List<Voce>    classifica = new ArrayList<>();
+    // ── Stato interno ─────────────────────────────────────────────────────
 
+    /** Timestamp di inizio gara (ms epoch), impostato nel costruttore. */
+    private final long inizioMs;
+
+    /** Lista dei piazzamenti in ordine di inserimento (indice 0 = primo). */
+    private final List<Voce> classifica = new ArrayList<>();
+
+    // ── Costruttore ───────────────────────────────────────────────────────
+
+    /**
+     * Crea una nuova classifica e avvia il cronometro.
+     * Deve essere istanziata all'inizio di {@link Frm_Gara#startGara()}.
+     */
     public GestioneClassifica() {
         this.inizioMs = System.currentTimeMillis();
     }
 
+    // ── Metodi pubblici ───────────────────────────────────────────────────
+
     /**
-     * Chiamato quando una torre cade.
-     * Thread-safe: usa synchronized su this.
+     * Registra la vittoria di una corsia (torre abbattuta).
+     * Assegna automaticamente la posizione in base all'ordine di chiamata.
+     *
+     * Metodo {@code synchronized}: gestisce chiamate concorrenti
+     * dai 3 thread corsia senza race condition
      *
      * @param corsia       numero della corsia (1–3)
      * @param nomeCampione nome del campione della corsia
-     * @return posizione assegnata (1 = primo a cadere)
+     * @return posizione assegnata (1 = prima torre caduta)
      */
     public synchronized int registraVittoria(int corsia, String nomeCampione) {
         long tempo     = System.currentTimeMillis() - inizioMs;
@@ -59,13 +102,20 @@ public class GestioneClassifica {
     }
 
     /**
-     * Restituisce la classifica come lista immutabile, ordinata per posizione.
+     * Restituisce la classifica come lista immutabile ordinata per posizione.
+     *
+     * @return lista di {@link Voce} (da 0 a 3 elementi)
      */
     public synchronized List<Voce> getClassifica() {
         return Collections.unmodifiableList(new ArrayList<>(classifica));
     }
 
-    /** Quante torri sono già cadute. */
+    /**
+     * Restituisce quante torri sono già cadute.
+     * Usato da {@link Frm_Gara} per rilevare la fine della gara (== 3).
+     *
+     * @return numero di torri cadute (0–3)
+     */
     public synchronized int getTorreCadute() {
         return classifica.size();
     }
