@@ -3,12 +3,12 @@ package LeagueOfThreads;
 /**
  * Punto di ingresso dell'applicazione LeagueOfThreads.
  *
- * Imposta il Look &amp; Feel Nimbus (se disponibile sulla JVM corrente)
- * per uno stile grafico moderno e uniforme, poi crea e mostra la schermata
- * iniziale {@link Frm_Start} sull'Event Dispatch Thread (EDT).
+ * Imposta il Look &amp; Feel Nimbus (se disponibile sulla JVM corrente) per uno
+ * stile grafico moderno e uniforme, poi crea e mostra la schermata iniziale
+ * {@link Frm_Start} sull'Event Dispatch Thread (EDT).
  *
- * Tutte le operazioni Swing devono essere eseguite sull'EDT per garantire
- * la thread-safety dell'interfaccia grafica; per questo si utilizza
+ * Tutte le operazioni Swing devono essere eseguite sull'EDT per garantire la
+ * thread-safety dell'interfaccia grafica; per questo si utilizza
  * {@link java.awt.EventQueue#invokeLater}.
  */
 public class Avvia {

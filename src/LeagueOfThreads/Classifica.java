@@ -6,11 +6,10 @@ import java.util.List;
  * Finestra della classifica finale.
  *
  * Flusso di utilizzo tipico:
- * 
- *      {@link Frm_Gara} rileva che tutte e 3 le torri sono cadute.
- *      Chiama il factory method statico {@link #apri(GestioneClassifica)}.
- *      {@code apri} crea la finestra sull'EDT, chiama {@link #mostraClassifica}
- *       e la rende visibile.
+ *
+ * {@link Frm_Gara} rileva che tutte e 3 le torri sono cadute. Chiama il factory
+ * method statico {@link #apri(GestioneClassifica)}. {@code apri} crea la
+ * finestra sull'EDT, chiama {@link #mostraClassifica} e la rende visibile.
  *
  * Ogni textbox mostra: {@code NomeCampione  –  Corsia N  –  m:ss.d}
  */
@@ -27,14 +26,12 @@ public class Classifica extends javax.swing.JFrame {
     // ════════════════════════════════════════════════════════════════════
     //  LOGICA – unica parte aggiunta, tutto il resto è GEN invariato
     // ════════════════════════════════════════════════════════════════════
-
     /**
      * Popola le 3 textbox con i dati della classifica.
      *
      * Per ogni posizione scrive nel campo corrispondente:
-     * {@code NomeCampione  –  Corsia N  –  m:ss.d}.
-     * Se per qualsiasi motivo ci sono meno di 3 voci registrate,
-     * le textbox rimanenti mostrano "—".
+     * {@code NomeCampione  –  Corsia N  –  m:ss.d}. Se per qualsiasi motivo ci
+     * sono meno di 3 voci registrate, le textbox rimanenti mostrano "—".
      *
      * Deve essere chiamato sull'EDT (garantito da {@link #apri}).
      *
@@ -42,15 +39,15 @@ public class Classifica extends javax.swing.JFrame {
      */
     public void mostraClassifica(GestioneClassifica gc) {
         List<GestioneClassifica.Voce> voci = gc.getClassifica();
-        javax.swing.JTextField[] campi = { txt_Pos1, txt_Pos2, txt_Pos3 };
+        javax.swing.JTextField[] campi = {txt_Pos1, txt_Pos2, txt_Pos3};
 
         for (int i = 0; i < campi.length; i++) {
             if (i < voci.size()) {
                 GestioneClassifica.Voce v = voci.get(i);
                 campi[i].setText(
-                    v.nomeCampione
-                    + "  –  Corsia " + v.corsia
-                    + "  –  " + v.tempoFormattato()
+                        v.nomeCampione
+                        + "  –  Corsia " + v.corsia
+                        + "  –  " + v.tempoFormattato()
                 );
             } else {
                 campi[i].setText("—");
@@ -61,9 +58,9 @@ public class Classifica extends javax.swing.JFrame {
     /**
      * Factory method: crea, popola e mostra la classifica sull'EDT.
      *
-     * Questo metodo può essere chiamato da qualsiasi thread (inclusi i
-     * thread corsia di {@link Frm_Gara}): l'operazione viene delegata
-     * sull'EDT tramite {@link javax.swing.SwingUtilities#invokeLater}.
+     * Questo metodo può essere chiamato da qualsiasi thread (inclusi i thread
+     * corsia di {@link Frm_Gara}): l'operazione viene delegata sull'EDT tramite
+     * {@link javax.swing.SwingUtilities#invokeLater}.
      *
      * @param gc gestore classifica con i dati della gara appena conclusa
      */
@@ -78,7 +75,6 @@ public class Classifica extends javax.swing.JFrame {
     // ════════════════════════════════════════════════════════════════════
     //  CODICE GENERATO DA NETBEANS – NON MODIFICARE
     // ════════════════════════════════════════════════════════════════════
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
